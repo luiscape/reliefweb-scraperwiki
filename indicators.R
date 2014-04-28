@@ -8,26 +8,29 @@ library(hdxdictionary)  # special package for  HDx dictionaires.
 source(collector.R)
 
 # Collecting data.
-data <- GetLatestReports()
+ReportData <- GetLatestReports()
+DisasterData <- GetLatestDisasters()
 
 # Adding the continent name to the dataset
-data$iso3 <- toupper(data$iso3)
+ReportData$iso3 <- toupper(ReportData$iso3)
+DisasterData$iso3 <- toupper(DisasterData$iso3)
 
 # Adding a month and year facets. 
-data$year <- year(data$created)
+ReportData$year <- year(ReportData$created)
+DisasterData$year <- year(DisasterData$created)
 
 
 source('rw.indicators.country.R')  # update this function
 # rw.segment.countries(df = all.data)  # can't remember what this is about.
-x <- rw.indicators.country(df = data, entity = 'disaster', end = 2014)
+ReportData <- rw.indicators.country(df = ReportData, entity = 'disaster', end = 2014)
+DisasterData <- rw.indicators.country(df = DisasterData, entity = 'disaster', end = 2014)
 
 
 # Cleaning the dataset for export. 
-all.countries.reports <- read.csv('data-summary/ReliefWeb-ALLCountries-report-2000-2014-wide.csv')
-all.countries.reports$X <- NULL
-all.countries.reports$country.name <- hdxdictionray(all.countries.reports$iso3, 'iso3c', 'country.name') 
+# FormattedData$country.name <- hdxdictionray(FormattedData$iso3, 'iso3c', 'country.name') 
 # there is one NA = Guam, territory of the United States of America. 
-write.csv(all.countries.reports, file = 'ReliefWeb-ALLCountries-report-2000-2014-wide.csv', row.names = TRUE)
+write.csv(FormattedData, file = 'data-summary/ReliefWeb-ALLCountries-report-2000-2014-wide.csv', row.names = TRUE)
+write.csv(FormattedData, file = 'data-summary/ReliefWeb-ALLCountries-disasters-2000-2014-wide.csv', row.names = TRUE)
 
 
 
@@ -56,9 +59,10 @@ value <- NA  # Add the values.
 is_number <- NA  # Validation test? If it is number == 1 !number == 0
 # source <- NA  # I am not sure what should I add here. ReliefWeb? or a  link? 
 
-## Using the files I've already collected. ## 
+## Using the files I've already collected. ##
+## REVIEW!! 
 # For disasters
-disasters <- read.csv('data-summary/ReliefWeb-ALLCountries-disaster-2000-2014-long.csv')
+disasters <- read.csv('data-summary/ReliefWeb-ALLCountries-disasters-2000-2014-long.csv')
 disasters$indID <- 'RW001'
 colnames(disasters)[1] <- 'value'
 colnames(disasters)[2] <- 'period'
