@@ -81,29 +81,30 @@ colnames(reports)[3] <- 'region'
 reports$dsID <- 'reliefweb'
 reports$source <- NA
 
-# For sources.
-# The API doesn't serve when an organization joined ReliefWeb. 
-# Therefore I am adding all organizations as of the year 2014.
-sources <- read.csv('data-summary/ReliefWeb-AllSources.csv')
-sources$focus <- hdxdictionary(sources$country, 'iso3c', 'hdx.focus')
-sources.focus <- subset(sources, sources$focus == TRUE)
-sources.table <- data.frame(table(sources.focus$country))
-sources.table <- subset(sources.table, sources.table$Freq != 0)
-sources.table$row.names <- NULL
-sources <- sources.table
+# # For sources.
+# # The API doesn't serve when an organization joined ReliefWeb. 
+# # Therefore I am adding all organizations as of the year 2014.
+# sources <- read.csv('data-summary/ReliefWeb-AllSources.csv')
+# sources$focus <- hdxdictionary(sources$country, 'iso3c', 'hdx.focus')
+# sources.focus <- subset(sources, sources$focus == TRUE)
+# sources.table <- data.frame(table(sources.focus$country))
+# sources.table <- subset(sources.table, sources.table$Freq != 0)
+# sources.table$row.names <- NULL
+# sources <- sources.table
 
-# Preparing for export
-sources$indID <- 'RW003'
-sources$period <- 2014
-colnames(sources)[1] <- 'region'
-colnames(sources)[2] <- 'value'
-sources$dsID <- 'reliefweb'
-sources$source <- NA
+# # Preparing for export
+# sources$indID <- 'RW003'
+# sources$period <- 2014
+# colnames(sources)[1] <- 'region'
+# colnames(sources)[2] <- 'value'
+# sources$dsID <- 'reliefweb'
+# sources$source <- NA
 
 # Getting one file 
 z <- rbind (disasters, reports, sources)
 
 # Running the validation test. 
+source(is_number.R)
 z <- is_number(z)
 
 # Rearranging the output.
@@ -111,13 +112,3 @@ z <- is_number(z)
 # Saving the CSV file. 
 write.csv(z, file = 'cps-export/value.csv', row.names = FALSE)
 
-
-
-## Validation test for is_number ## 
-is_number <- function(df = NULL) { 
-    for (i in 1:nrow(df)) { 
-        if (is.numeric(df$value) == TRUE) { df$is_number[i] <- 1 }
-        else { df$is_number[i] <- 0 }
-    }
-    return(df)
-}
